@@ -253,28 +253,7 @@ static bool read_global_ca_list(const char* file, struct hash* d, int tmpfile_fd
 	return true;
 }
 
-typedef enum {
-	FILE_LINK,
-	FILE_REGULAR
-} filetype;
-
-static bool is_filetype(const char* path, filetype file_check)
-{
-	struct stat statbuf;
-
-	if (lstat(path, &statbuf) < 0)
-		return false;
-	switch(file_check) {
-	case FILE_LINK: return S_ISLNK(statbuf.st_mode);
-	case FILE_REGULAR: return S_ISREG(statbuf.st_mode);
-	default: break;
-	}
-
-	return false;
-}
-
 static bool dir_readfiles(struct hash* d, const char* path,
-			  filetype allowed_file_type,
 			  proc_path path_processor,
 			  int tmpfile_fd)
 {
@@ -289,9 +268,7 @@ static bool dir_readfiles(struct hash* d, const char* path,
 
 		char* fullpath = 0;
 		if (asprintf(&fullpath, "%s%s", path, dirp->d_name) != -1) {
-			if (is_filetype(fullpath, allowed_file_type))
-				path_processor(fullpath, d, tmpfile_fd);
-
+			path_processor(fullpath, d, tmpfile_fd);
 			free(fullpath);
 		}
 	}
@@ -334,10 +311,10 @@ int main(int a, char **v)
 	read_global_ca_list(CERTSCONF, calinks, fd);
 
 	/* Handle local CA certificates */
-	dir_readfiles(calinks, LOCALCERTSDIR, FILE_REGULAR, &proc_localglobaldir, fd);
+	dir_readfiles(calinks, LOCALCERTSDIR, &proc_localglobaldir, fd);
 
 	/* Update etc cert dir for additions and deletions*/
-	dir_readfiles(calinks, ETCCERTSDIR, FILE_LINK, &proc_etccertsdir, fd);
+	dir_readfiles(calinks, ETCCERTSDIR, &proc_etccertsdir, fd);
 	hash_foreach(calinks, update_ca_symlink);
 
 	/* Update hashes and the bundle */
