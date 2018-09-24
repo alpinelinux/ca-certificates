@@ -196,7 +196,7 @@ static void proc_localglobaldir(const char *fullpath, struct hash *h, int tmpfil
 
 static void proc_etccertsdir(const char* fullpath, struct hash* h, int tmpfile_fd)
 {
-	char linktarget[SYMLINK_MAX];
+	char linktarget[PATH_MAX];
 	ssize_t linklen;
 
 	linklen = readlink(fullpath, linktarget, sizeof(linktarget)-1);
