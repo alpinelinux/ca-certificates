@@ -31,4 +31,8 @@ install: all
 clean:
 	rm -rf update-ca-certificates c_rehash certdata.stamp *.crt
 
-.PHONY: install clean
+# https://hg.mozilla.org/mozilla-central/file/tip/security/nss/lib/ckfw/builtins/certdata.txt
+update:
+	curl https://hg.mozilla.org/mozilla-central/raw-file/tip/security/nss/lib/ckfw/builtins/certdata.txt > certdata.txt
+
+.PHONY: install clean update
