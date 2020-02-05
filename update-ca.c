@@ -191,6 +191,7 @@ static void proc_localglobaldir(const char *fullpath, struct hash *h, int tmpfil
 		fprintf(stderr, "Warning! Cannot hash: %s\n", fullpath);
 	if (!copyfile(fullpath, tmpfile_fd))
 		fprintf(stderr, "Warning! Cannot copy to bundle: %s\n", fullpath);
+	write(tmpfile_fd, "\n", 1);
 	free(actual_file);
 }
 
@@ -260,7 +261,7 @@ static bool dir_readfiles(struct hash* d, const char* path,
 	DIR *dp = opendir(path);
 	if (!dp)
 		return false;
- 
+
 	struct dirent *dirp;
 	while ((dirp = readdir(dp)) != NULL) {
 		if (str_begins(dirp->d_name, "."))
