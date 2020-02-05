@@ -330,7 +330,7 @@ int main(int a, char **v)
 	free(tmpfile);
 
 	/* Execute run-parts */
-	static const char *run_parts_args[] = { "run-parts", RUNPARTSDIR, 0 };
+	static char *const run_parts_args[] = { "run-parts", RUNPARTSDIR, 0 };
 	execve("/usr/bin/run-parts", run_parts_args, NULL);
 	execve("/bin/run-parts", run_parts_args, NULL);
 	perror("run-parts");
