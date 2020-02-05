@@ -2,3 +2,4 @@ update-ca-certificates
 c_rehash
 certdata.stamp
 *.crt
+*.pem

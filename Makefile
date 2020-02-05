@@ -1,4 +1,4 @@
-PYTHON := python3
+PERL := perl
 
 all: update-ca-certificates c_rehash certdata.stamp
 
@@ -8,8 +8,11 @@ update-ca-certificates: update-ca.c
 c_rehash: c_rehash.c
 	${CC} ${CFLAGS} -o $@ c_rehash.c -lcrypto ${LDFLAGS}
 
-certdata.stamp:
-	${PYTHON} certdata2pem.py
+cert.pem: mk-ca-bundle.pl
+	${PERL} mk-ca-bundle.pl -n -w 64 $@
+
+certdata.stamp: cert.pem split-ca-bundle.sh
+	${SHELL} split-ca-bundle.sh < cert.pem
 	touch $@
 
 install: all
@@ -29,7 +32,7 @@ install: all
 	install -m755 c_rehash ${DESTDIR}/usr/bin
 
 clean:
-	rm -rf update-ca-certificates c_rehash certdata.stamp *.crt
+	rm -rf update-ca-certificates c_rehash certdata.stamp *.crt cert.pem
 
 # https://hg.mozilla.org/mozilla-central/file/tip/security/nss/lib/ckfw/builtins/certdata.txt
 update:
